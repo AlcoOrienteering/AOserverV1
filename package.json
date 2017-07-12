@@ -1,12 +1,23 @@
 {
-  "name": "socket-chat-example",
+  "name": "Alkoorientak",
   "version": "0.0.1",
-  "description": "my first socket.io app",
+  "description": "Alkoorientak backend",
   "dependencies": {
+    "body-parser": "^1.17.2",
     "express": "^4.15.2",
-    "socket.io": "^1.7.3"
+    "firebase-admin": "^5.0.0",
+    "mysql-pro": "^1.0.1",
+    "parse-bearer-token": "0.0.1",
+    "uuid4": "^1.0.0"
   },
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "engines": {
+    "node": "7.10.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
   }
 }

@@ -1,0 +1,185 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Alko app</title>
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font: 13px Helvetica, Arial; }
+      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages li { padding: 5px 10px; }
+      #messages li:nth-child(odd) { background: #eee; }
+      #messages { margin-bottom: 40px }
+    </style>
+	<style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="https://www.gstatic.com/firebasejs/4.1.2/firebase.js"></script>
+	<div id="map"></div>
+    <script>
+
+      // This example creates a 2-pixel-wide red polyline showing the path of William
+      // Kingsford Smith's first trans-Pacific flight between Oakland, CA, and
+      // Brisbane, Australia.	
+	  var map;
+      function initMap() {
+	  
+		 google.maps.LatLng.prototype.kmTo = function(a){ 
+			var e = Math, ra = e.PI/180; 
+			var b = this.lat() * ra, c = a.lat() * ra, d = b - c; 
+			var g = this.lng() * ra - a.lng() * ra; 
+			var f = 2 * e.asin(e.sqrt(e.pow(e.sin(d/2), 2) + e.cos(b) * e.cos(c) * e.pow(e.sin(g/2), 2))); 
+			return f * 6378.137; 
+		  } 
+
+		  google.maps.Polyline.prototype.inKm = function(n){ 
+			var a = this.getPath(n), len = a.getLength(), dist = 0; 
+			for(var i=0; i<len-1; i++){ 
+			  dist += a.getAt(i).kmTo(a.getAt(i+1)); 
+			} 
+			return dist; 
+		  } 
+	  
+         map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 18,
+          center: {lat: 50.797357141393775, lng: 15.039972066879272},
+          mapTypeId: 'roadmap', /* terrain, satellite */
+		  maxZoom: 20
+        });
+		/*
+        var flightPlanCoordinates = [
+          {lat: 37.772, lng: -122.214},
+          {lat: 21.291, lng: -157.821},
+          {lat: -18.142, lng: 178.431},
+          {lat: -27.467, lng: 153.027}
+        ];
+        var flightPath = new google.maps.Polyline({
+          path: flightPlanCoordinates,
+          geodesic: true,
+          strokeColor: '#FF0000',
+          strokeOpacity: 1.0,
+          strokeWeight: 2
+        });
+
+        flightPath.setMap(map);
+		*/
+      }
+    </script>
+    <script>
+	
+		function loggedIn(){
+			var t = document.createTextNode("You are logged in as: " + user.email + ' [' + user.displayName + ']');
+			document.body.appendChild(t); 
+		}
+		
+		// Initialize default app
+		// Retrieve your own options values by adding a web app on
+		// https://console.firebase.google.com
+		firebase.initializeApp({
+		  apiKey: "AIzaSyBpB4BgKy9kBg1rnAq8N549Qyz5jOlD7bQ",                            // Auth / General Use
+		  authDomain: "alcorienteering-18b6a.firebaseapp.com",         // Auth with popup/redirect
+		  databaseURL: "https://alcorienteering-18b6a.firebaseio.com", // Realtime Database
+		  storageBucket: "alcorienteering-18b6a.appspot.com",          // Storage
+		  messagingSenderId: "123456789"                  // Cloud Messaging
+		});
+		
+		var user, flightPath;
+
+		// Using a popup.
+		var provider = new firebase.auth.GoogleAuthProvider();
+		provider.addScope('profile');
+		provider.addScope('email');
+		firebase.auth().signInWithPopup(provider).then(function(result) {
+			// This gives you a Google Access Token.
+			var token = result.credential.accessToken;
+			// The signed-in user info.
+			user = result.user;
+			console.log(token, user);
+						/*
+			var ref = firebase.database().ref("bagrovo/" + user.uid);
+			ref.set({ name: user.displayName, email: user.email });			*/
+			
+			var checkpointstRef = firebase.database().ref("_checkpoints"); 
+			var res = checkpointstRef.child("race_key").orderByChild("type").equalTo("START").once('value').then(function(data) {
+				console.log(data.key, data.val());
+			});
+			
+			//var locRef = firebase.database().ref("position"); 			
+			//var locRef = firebase.database().ref("_checkpoints/race_key"); 			
+			var locRef = firebase.database().ref("_locations/race_key/AHZqDkhKRWPxwhU92AD7WRikf6z2"); 			
+			locRef.on('value', function(data) {
+				//console.log('data', data.val());
+				var flightPlanCoordinates = [];	
+				var bounds = new google.maps.LatLngBounds();
+				var v = data.val();
+				data.forEach(function(v) {
+					//if (parseInt(v.val().accuracy) < 10){
+					if (parseInt(v.val().time) > 1499855000000){
+					//1499860800
+						var c = new google.maps.LatLng(parseFloat(v.val().lat), parseFloat(v.val().lng));
+						flightPlanCoordinates.push(c);		
+						bounds.extend(c);		
+					}					
+				});
+				//console.log('flightPlanCoordinates', flightPlanCoordinates);
+				flightPath = new google.maps.Polyline({
+					path: flightPlanCoordinates,
+					geodesic: true,
+					strokeColor: '#FF0000',
+					strokeOpacity: 1.0,
+					strokeWeight: 2
+				});
+				flightPath.setMap(map);
+				//map.fitBounds(bounds);
+				//map.setZoom(map.getZoom()-1);
+				//bounds.getCenter();
+				console.log(flightPath.inKm());
+			});
+		});			
+		
+		/*
+		if(!firebase.auth().currentUser){
+			// Using a redirect.
+			var provider = new firebase.auth.GoogleAuthProvider();
+			provider.addScope('profile');
+			provider.addScope('email');
+			firebase.auth().signInWithRedirect(provider);			
+		} else {
+			//loggedIn();
+		}
+		
+		firebase.auth().getRedirectResult().then(function(result) {
+			// This gives you a Google Access Token.
+			//var token = result.credential.accessToken;
+			// The signed-in user info.
+			user = result.user;
+			console.log(user);
+						
+			var ref = firebase.database().ref("bagrovo/" + user.uid);
+			ref.set({ name: user.displayName, email: user.email });
+			
+			loggedIn();
+
+		});
+		*/
+    </script>
+	
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-ap_Mc_mQ7-EcF2PXr9Bko-0rNvupsSk&callback=initMap" async defer></script>
+  </body>
+</html>
