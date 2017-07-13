@@ -271,7 +271,7 @@ async function getRaces(){
 }
 
 async function getRaceByTeamCode(code){
-	let [race]  = await mysql.query('select r.*, t.code, t.category, t.start_timestamp from race r join teams t on t.race_id = r.id where t.code = ?', [code]);
+	let [race]  = await mysql.query('select r.*, t.code team_code, t.category team_category, t.start_timestamp team_start_timestamp from race r join teams t on t.race_id = r.id where t.code = ?', [code]);
 	if(!race) return null;
 	let [check]  = await mysql.query('select * from checkpoints where race_id = ? and type = ?', [race.id, 'START']);
 	race.start = check;
