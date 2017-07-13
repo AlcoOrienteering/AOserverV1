@@ -10,8 +10,20 @@ var firebase = require("firebase-admin");
 
 var parseBearerToken = require('parse-bearer-token');
 
-var serviceAccount = JSON.parse(process.env['alcorienteering-18b6a-firebase-adminsdk-3plh3-bfcea0cc3b']);
+//var serviceAccount = JSON.parse(process.env['alcorienteering-18b6a-firebase-adminsdk-3plh3-bfcea0cc3b']);
 // var serviceAccount = require("./alcorienteering-18b6a-firebase-adminsdk-3plh3-bfcea0cc3b.json");
+var serviceAccount = {
+	type: process.env.FB_type,
+	project_id: process.env.FB_project_id,
+	private_key_id: process.env.FB_private_key_id,
+	private_key: process.env.FB_private_key,
+	client_email: process.env.FB_client_email,
+	client_id: process.env.FB_client_id,
+	auth_uri: process.env.FB_auth_uri,
+	token_uri: process.env.FB_token_uri,
+	auth_provider_x509_cert_url: process.env.FB_auth_provider_x509_cert_url,
+	client_x509_cert_url: process.env.FB_client_x509_cert_url
+};
 
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
