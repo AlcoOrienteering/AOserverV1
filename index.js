@@ -5,6 +5,7 @@ var http = require('http').Server(app);
 var port = process.env.PORT || 3000;
 
 var uuid = require('uuid4');
+var base64 = require('uuid-base64');
 
 var firebase = require("firebase-admin");
 
@@ -302,12 +303,9 @@ async function insertTeam(race_id, name, category){
 }
 */
 
-function generateTeamCode(){	
-	var u = uuid(); ;
-	console.log(u)
-	var buffer = new Buffer(u);
-	var short_uuid = buffer.toString('base64');
-	return short_uuid.substring(0,20);
+function generateTeamCode(){
+	let u = uuid();
+	return base64.encode(u);
 }
 
 http.listen(port, function(){

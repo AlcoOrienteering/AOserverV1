@@ -8,6 +8,7 @@
     "firebase-admin": "^5.0.0",
     "mysql-pro": "^1.0.1",
     "parse-bearer-token": "0.0.1",
+    "uuid-base64": "^1.0.0",
     "uuid4": "^1.0.0"
   },
   "scripts": {
