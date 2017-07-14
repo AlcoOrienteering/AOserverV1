@@ -185,7 +185,8 @@ app.post('/api/v1/register/fcm', async function(req, res){
 app.post('/api/v1/races', function(req, res){		
 	authenticate(req, async function(uid){
 		try{
-			var races = await getRaces();			
+			let user_id = await getUserByUID(uid);
+			var races = await getRacesByUserId(user_id);			
 		} catch (e){
 			console.log(e)
 		}
@@ -276,6 +277,11 @@ async function getUserById(id){
 
 async function getRaces(){
 	let res = await mysql.query('SELECT * FROM race', []);
+	return res;
+}
+
+async function getRacesByUserId(id){
+	let res = await mysql.query('select r.*, t.code team_code, t.category team_category, t.start_timestamp team_start_timestamp from race r join teams t on t.race_id = r.id join participants p on p.team_id = t.id where p.user_id = ?', [id]);
 	return res;
 }
 
