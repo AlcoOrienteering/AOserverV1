@@ -42,7 +42,11 @@ function authenticate(req, succes, failed){
 		  .then(function(decodedToken) {
 			uid = decodedToken.uid;
 			succes(uid);
-		  }).catch(failed);
+		  }).catch(function(e){
+			  var code = 400;
+			  if (e.errorInfo.code === 'auth/argument-error') code = 401;
+			  failed(e.errorInfo.message, code);
+		  });
 	}	
 }
 
@@ -86,8 +90,8 @@ app.get('/client', function(req, res){
 });
 
 
-function authFailedResponse(res, msg = ""){
-	JsonResponseError(res, "User authentication failed. " + msg);
+function authFailedResponse(res, msg = "User authentication failed.", code = 400){
+	JsonResponseError(res, msg, code);
 }
 
 function JsonResponse(res, data){
@@ -95,16 +99,14 @@ function JsonResponse(res, data){
 	res.send(JSON.stringify(data));
 }
 
-function JsonResponseError(res, msg){
+function JsonResponseError(res, msg, code){
 	let r = {
 		error: {
 			message: msg
 		}
 	};
-	var code = 400;
-	if(msg.startsWith('User authentication failed. Firebase ID token has expired.')) code = 401;
 	res.setHeader('Content-Type', 'application/json');
-	res.status(400).send(JSON.stringify(r));
+	res.status(code).send(JSON.stringify(r));
 }
 
 /*
@@ -184,8 +186,8 @@ app.post('/api/v1/races', function(req, res){
 	authenticate(req, async function(uid){
 		let races = await getRaces();
 		JsonResponse(res, {races: races});
-	}, function(err){
-		authFailedResponse(res, err);
+	}, function(err, code){
+		authFailedResponse(res, err, code);
 	});
 });
 
@@ -197,8 +199,8 @@ app.post('/api/v1/race/login', function(req, res){
 		}
 		let race = await getRaceByTeamCode(req.body.code);
 		JsonResponse(res, {race: race});
-	}, function(err){
-		authFailedResponse(res, err);
+	}, function(err, code){
+		authFailedResponse(res, err, code);
 	});
 });
 
@@ -210,16 +212,16 @@ app.post('/api/v1/race/checkpoints', function(req, res){
 		}
 		let checkpoints = await getRaceCheckpointsByTeamCode(req.body.code);
 		JsonResponse(res, {checkpoints: checkpoints});
-	}, function(err){
-		authFailedResponse(res, err);
+	}, function(err, code){
+		authFailedResponse(res, err, code);
 	});
 });
 
 app.post('/api/v1/race/logout', function(req, res){		
 	authenticate(req, async function(uid){
 		JsonResponse(res, {success: true});
-	}, function(err){
-		authFailedResponse(res, err);
+	}, function(err, code){
+		authFailedResponse(res, err, code);
 	});
 });
 
@@ -246,8 +248,8 @@ app.post('/api/v1/test', async function(req, res){
 		let data = await x();
 		JsonResponse(res, data);
 
-	}, function(err){
-		authFailedResponse(res, err);
+	}, function(err, code){
+		authFailedResponse(res, err, code);
 	});
 
 });
