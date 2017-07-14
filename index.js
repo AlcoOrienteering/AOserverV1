@@ -184,7 +184,11 @@ app.post('/api/v1/register/fcm', async function(req, res){
 
 app.post('/api/v1/races', function(req, res){		
 	authenticate(req, async function(uid){
-		let races = await getRaces();
+		try{
+			var races = await getRaces();			
+		} catch (e){
+			console.log(e)
+		}
 		JsonResponse(res, {races: races});
 	}, function(err, code){
 		authFailedResponse(res, err, code);
