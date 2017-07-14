@@ -101,6 +101,8 @@ function JsonResponseError(res, msg){
 			message: msg
 		}
 	};
+	var code = 400;
+	if(msg.startsWith('User authentication failed. Firebase ID token has expired.')) code = 401;
 	res.setHeader('Content-Type', 'application/json');
 	res.status(400).send(JSON.stringify(r));
 }
