@@ -99,7 +99,7 @@ function JsonResponse(res, data){
 	res.send(JSON.stringify(data));
 }
 
-function JsonResponseError(res, msg, code){
+function JsonResponseError(res, msg, code = 400){
 	let r = {
 		error: {
 			message: msg
