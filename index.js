@@ -185,8 +185,8 @@ app.post('/api/v1/register/fcm', async function(req, res){
 app.post('/api/v1/races', function(req, res){		
 	authenticate(req, async function(uid){
 		try{
-			let user_id = await getUserByUID(uid);
-			var races = await getRacesByUserId(user_id);			
+			let user = await getUserByUID(uid);
+			var races = await getRacesByUserId(user.id);			
 		} catch (e){
 			console.log(e)
 		}
