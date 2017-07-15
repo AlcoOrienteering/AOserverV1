@@ -282,12 +282,12 @@ async function getRaces(){
 }
 
 async function getRacesByUserId(id){
-	let res = await mysql.query('select r.*, t.code team_code, t.name team_name, t.status team_status, t.category team_category, t.start_timestamp team_start_timestamp from race r join teams t on t.race_id = r.id join participants p on p.team_id = t.id where p.user_id = ?', [id]);
+	let res = await mysql.query('select r.*, r.status race_status, t.code team_code, t.name team_name, t.status team_status, t.category team_category, t.start_timestamp team_start_timestamp from race r join teams t on t.race_id = r.id join participants p on p.team_id = t.id where p.user_id = ?', [id]);
 	return res;
 }
 
 async function getRaceByTeamCode(code){
-	let [race]  = await mysql.query('select r.*, t.code team_code, t.name team_name, t.status team_status, t.category team_category, t.start_timestamp team_start_timestamp from race r join teams t on t.race_id = r.id where t.code = ?', [code]);
+	let [race]  = await mysql.query('select r.*, r.status race_status, t.code team_code, t.name team_name, t.status team_status, t.category team_category, t.start_timestamp team_start_timestamp from race r join teams t on t.race_id = r.id where t.code = ?', [code]);
 	if(!race) return null;
 	let [check]  = await mysql.query('select * from checkpoints where race_id = ? and type = ?', [race.id, 'START']);
 	race.start = check;
