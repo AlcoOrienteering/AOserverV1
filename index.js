@@ -197,7 +197,7 @@ app.post('/api/v1/races', function(req, res){
 	});
 });
 
-app.post('/api/v1/race/login', function(req, res){		
+app.post('/api/v1/race', function(req, res){		
 	authenticate(req, async function(uid){
 		if(!req.body.code) {
 			JsonResponseError(res, 'Missing parameter "Code".');
