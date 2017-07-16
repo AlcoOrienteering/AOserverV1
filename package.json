@@ -6,6 +6,7 @@
     "body-parser": "^1.17.2",
     "express": "^4.15.2",
     "firebase-admin": "^5.0.0",
+    "moment": "^2.18.1",
     "mysql-pro": "^1.0.1",
     "parse-bearer-token": "0.0.1",
     "uuid-base64": "^1.0.0",

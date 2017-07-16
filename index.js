@@ -7,6 +7,8 @@ var port = process.env.PORT || 3000;
 var uuid = require('uuid4');
 var base64 = require('uuid-base64');
 
+var moment = require('moment');
+
 var firebase = require("firebase-admin");
 
 var parseBearerToken = require('parse-bearer-token');
@@ -108,6 +110,19 @@ function JsonResponseError(res, msg, code = 400){
 	};
 	res.setHeader('Content-Type', 'application/json');
 	res.status(code).send(JSON.stringify(r));
+}
+
+function JsonResponseCheckpoints(res, checkpoints, code, error = ''){
+	let r = {
+	  "checkpoints": checkpoints,
+	  "error_body": {
+		"success": (error === ''),
+		"id": code,
+		"message": error
+	  }
+	};
+	res.setHeader('Content-Type', 'application/json');
+	res.status(error === '' ? 200 : 400).send(JSON.stringify(r));
 }
 
 /*
@@ -230,11 +245,18 @@ app.post('/api/v1/race', function(req, res){
 app.post('/api/v1/race/checkpoints', function(req, res){		
 	authenticate(req, async function(uid){
 		if(!req.body.code) {
-			JsonResponseError(res, 'Missing parameter "Code".');
-			return;
+			JsonResponseCheckpoints(res, [], 101, 'Missing parameter "Code".');
 		}
-		let checkpoints = await getRaceCheckpointsByTeamCode(req.body.code);
-		JsonResponse(res, {checkpoints: checkpoints});
+		var code = req.body.code;
+		var team = await getTeamByCode(code);
+		if(!team){
+			JsonResponseCheckpoints(res, [], 102, 'Team not found.');
+		}
+		if(team.status !== 'ACCEPTED' || moment(team.start_timestamp).isBefore(moment())){
+			JsonResponseCheckpoints(res, [], 103, 'Checkpoints are not yet available for this team.');
+		}
+		var checkpoints = await getRaceCheckpointsByTeamCode(code);
+		JsonResponseCheckpoints(res, 0, checkpoints);
 	}, function(err, code){
 		authFailedResponse(res, err, code);
 	});
@@ -295,6 +317,11 @@ async function getUserById(id){
 
 async function getRaces(){
 	let res = await mysql.query('SELECT * FROM race', []);
+	return res;
+}
+
+async function getTeamByCode(code){
+	let [res] = await mysql.query('SELECT * FROM teams WHERE code = ?', [code]);
 	return res;
 }
 
