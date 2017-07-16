@@ -122,9 +122,13 @@ app.get('/api/v1/test/:uid', async function(req, res){
 */
 
 app.post('/api/v1/logout', function(req, res){
-	
-	JsonResponse(res, {success: true});
-
+	authenticate(req, async function(uid){
+		let user = await getUserByUID(uid);
+		let result = await mysql.query('DELETE FROM tokens WHERE user_id = ?', [user.id]);
+		JsonResponse(res, {success: true});
+	}, function(err){
+		authFailedResponse(res, err);
+	});
 });
 
 app.post('/api/v1/register/fcm', async function(req, res){
