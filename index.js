@@ -123,9 +123,13 @@ app.get('/api/v1/test/:uid', async function(req, res){
 
 app.post('/api/v1/logout', function(req, res){
 	authenticate(req, async function(uid){
-		let user = await getUserByUID(uid);
-		let result = await mysql.query('DELETE FROM tokens WHERE user_id = ?', [user.id]);
-		JsonResponse(res, {success: true});
+		var user = await getUserByUID(uid);
+		if(user) {
+			let result = await mysql.query('DELETE FROM tokens WHERE user_id = ?', [user.id]);
+			JsonResponse(res, {success: true});
+		} else {
+			JsonResponseError(res, 'User not found');
+		}			
 	}, function(err){
 		authFailedResponse(res, err);
 	});
