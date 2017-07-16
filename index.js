@@ -259,7 +259,7 @@ app.post('/api/v1/race/checkpoints', function(req, res){
 			return;
 		}
 		var checkpoints = await getRaceCheckpointsByTeamCode(code);
-		JsonResponseCheckpoints(res, 0, checkpoints);
+		JsonResponseCheckpoints(res, checkpoints, 0);
 	}, function(err, code){
 		authFailedResponse(res, err, code);
 	});
