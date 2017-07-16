@@ -293,7 +293,7 @@ async function getRaces(){
 async function getRacesByUserId(id) {
 	let res = await mysql.query(
 		`select
-			r.*
+			r.*,
 			r.status race_status,
 			t.code team_code,
 			t.name team_name,
@@ -314,7 +314,7 @@ async function getRacesByUserId(id) {
 async function getRaceByTeamCode(code) {
 	let [race] = await mysql.query(
 		`select
-			r.*
+			r.*,
 			r.status race_status,
 			t.code team_code,
 			t.name team_name,
