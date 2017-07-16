@@ -246,14 +246,17 @@ app.post('/api/v1/race/checkpoints', function(req, res){
 	authenticate(req, async function(uid){
 		if(!req.body.code) {
 			JsonResponseCheckpoints(res, [], 101, 'Missing parameter "Code".');
+			return;
 		}
 		var code = req.body.code;
 		var team = await getTeamByCode(code);
 		if(!team){
 			JsonResponseCheckpoints(res, [], 102, 'Team not found.');
+			return;
 		}
 		if(team.status !== 'ACCEPTED' || moment(team.start_timestamp).isBefore(moment())){
 			JsonResponseCheckpoints(res, [], 103, 'Checkpoints are not yet available for this team.');
+			return;
 		}
 		var checkpoints = await getRaceCheckpointsByTeamCode(code);
 		JsonResponseCheckpoints(res, 0, checkpoints);
