@@ -38,6 +38,8 @@
       // Kingsford Smith's first trans-Pacific flight between Oakland, CA, and
       // Brisbane, Australia.	
 	  var map;
+	  var marker;
+	  var flightPath;
       function initMap() {
 	  
 		 google.maps.LatLng.prototype.kmTo = function(a){ 
@@ -62,6 +64,21 @@
           mapTypeId: 'roadmap', /* terrain, satellite */
 		  maxZoom: 20
         });
+		
+		flightPath = new google.maps.Polyline({
+					path: [],
+					geodesic: true,
+					strokeColor: '#FF0000',
+					strokeOpacity: 1.0,
+					strokeWeight: 2
+				});
+				flightPath.setMap(map);
+		
+			marker = new google.maps.Marker({
+					title:"Martin",
+					position: {lat: 50.797357141393775, lng: 15.039972066879272}
+				});
+				marker.setMap(map);
 		/*
         var flightPlanCoordinates = [
           {lat: 37.772, lng: -122.214},
@@ -99,22 +116,37 @@
 		  messagingSenderId: "123456789"                  // Cloud Messaging
 		});
 		
-		var user, flightPath;
+		var user;
+		
+		firebase.auth().onAuthStateChanged(function(user) {
+		  console.log('onAuthStateChanged', user);
+		  if (user) {
+			drawMap();
+		  } else {
+			signIn();
+		  }
+		});
 
-		// Using a popup.
-		var provider = new firebase.auth.GoogleAuthProvider();
-		provider.addScope('profile');
-		provider.addScope('email');
-		firebase.auth().signInWithPopup(provider).then(function(result) {
-			// This gives you a Google Access Token.
-			var token = result.credential.accessToken;
-			// The signed-in user info.
-			user = result.user;
-			console.log(token, user);
-						/*
-			var ref = firebase.database().ref("bagrovo/" + user.uid);
-			ref.set({ name: user.displayName, email: user.email });			*/
-			
+		function signIn(){
+			// Using a popup.
+			var provider = new firebase.auth.GoogleAuthProvider();
+			provider.addScope('profile');
+			provider.addScope('email');
+			firebase.auth().signInWithPopup(provider).then(function(result) {
+				// This gives you a Google Access Token.
+				var token = result.credential.accessToken;
+				// The signed-in user info.
+				user = result.user;
+				console.log(token, user);
+							/*
+				var ref = firebase.database().ref("bagrovo/" + user.uid);
+				ref.set({ name: user.displayName, email: user.email });			*/
+				
+				
+			});
+		}
+		
+		function drawMap(){
 			var checkpointstRef = firebase.database().ref("_checkpoints"); 
 			var res = checkpointstRef.child("race_key").orderByChild("type").equalTo("START").once('value').then(function(data) {
 				console.log(data.key, data.val());
@@ -122,7 +154,8 @@
 			
 			//var locRef = firebase.database().ref("position"); 			
 			//var locRef = firebase.database().ref("_checkpoints/race_key"); 			
-			var locRef = firebase.database().ref("_locations/race_key/AHZqDkhKRWPxwhU92AD7WRikf6z2"); 			
+			//var locRef = firebase.database().ref("_locations/race_key/AHZqDkhKRWPxwhU92AD7WRikf6z2"); 			
+			var locRef = firebase.database().ref("_locations/1/AHZqDkhKRWPxwhU92AD7WRikf6z2"); 			
 			locRef.on('value', function(data) {
 				//console.log('data', data.val());
 				var flightPlanCoordinates = [];	
@@ -138,20 +171,20 @@
 					}					
 				});
 				//console.log('flightPlanCoordinates', flightPlanCoordinates);
-				flightPath = new google.maps.Polyline({
-					path: flightPlanCoordinates,
-					geodesic: true,
-					strokeColor: '#FF0000',
-					strokeOpacity: 1.0,
-					strokeWeight: 2
-				});
-				flightPath.setMap(map);
+				
+				flightPath.setPath(flightPlanCoordinates);
+				
+				marker.setPosition(flightPlanCoordinates[flightPlanCoordinates.length - 1])
+
+				// To add the marker to the map, call setMap();
+				
+				
 				//map.fitBounds(bounds);
 				//map.setZoom(map.getZoom()-1);
 				//bounds.getCenter();
 				console.log(flightPath.inKm());
 			});
-		});			
+		}
 		
 		/*
 		if(!firebase.auth().currentUser){
