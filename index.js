@@ -7,7 +7,8 @@ var port = process.env.PORT || 3000;
 var uuid = require('uuid4');
 var base64 = require('uuid-base64');
 
-var moment = require('moment');
+var moment = moment = require('moment-timezone');
+moment.tz.setDefault('Europe/Prague');
 
 var firebase = require("firebase-admin");
 
