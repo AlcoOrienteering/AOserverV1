@@ -255,7 +255,7 @@ app.post('/api/v1/race/checkpoints', function(req, res){
 			JsonResponseCheckpoints(res, [], 102, 'Team not found.');
 			return;
 		}
-		if((team.status !== 'ACCEPTED' && team.status !== 'RUNNING') || moment().isBefore(moment.tz(team.start_timestamp, 'Europe/Prague'))){
+		if((team.status !== 'ACCEPTED' && team.status !== 'RUNNING') || moment().add(2, 'seconds').isBefore(moment.tz(team.start_timestamp, 'Europe/Prague'))){
 			JsonResponseCheckpoints(res, [], 103, 'Checkpoints are not yet available for this team.');
 			return;
 		}
