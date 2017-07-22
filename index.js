@@ -332,7 +332,7 @@ async function getTeamByCode(code){
 	return res;
 }
 
-async function updateTeamStatus(status){
+async function updateTeamStatus(status, id){
 	let res = await mysql.query('UPDATE teams SET status = ? WHERE id = ?', [status, id]);
 	return res ? res.affectedRows : null;
 }
