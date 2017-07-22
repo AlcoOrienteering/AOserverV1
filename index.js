@@ -259,6 +259,9 @@ app.post('/api/v1/race/checkpoints', function(req, res){
 			JsonResponseCheckpoints(res, [], 103, 'Checkpoints are not yet available for this team.');
 			return;
 		}
+		if(team.status !== 'RUNNING'){
+			await updateTeamStatus('RUNNING', team.id);
+		}		
 		var checkpoints = await getRaceCheckpointsByTeamCode(code);
 		JsonResponseCheckpoints(res, checkpoints, 0);
 	}, function(err, code){
@@ -327,6 +330,11 @@ async function getRaces(){
 async function getTeamByCode(code){
 	let [res] = await mysql.query('SELECT * FROM teams WHERE code = ?', [code]);
 	return res;
+}
+
+async function updateTeamStatus(status){
+	let res = await mysql.query('UPDATE teams SET status = ? WHERE id = ?', [status, id]);
+	return res ? res.affectedRows : null;
 }
 
 async function getRacesByUserId(id) {
