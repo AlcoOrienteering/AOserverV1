@@ -376,7 +376,7 @@ async function setCheckpointVisited(checkpoint_id, user_id){
 	let res = await mysql.query(`
 		INSERT INTO participant_checkpoints 
 		(checkpoint_id, participant_id, timestamp)
-		VALUES (?, ?, ?)`, [checkpoint_id, user_id, moment()]);
+		VALUES (?, ?, ?)`, [checkpoint_id, user_id, moment().format('YYYY-MM-DD HH:mm:ss')]);
 	return res ? res.affectedRows : null;
 }
 
