@@ -433,7 +433,11 @@ async function getRaceByTeamCode(code) {
 async function getRaceCheckpointsByTeamCode(code) {
 	let res = await mysql.query(
 		`select
-			c.*
+			c.*,
+            (select timestamp from participant_checkpoints pc 
+            join participants p on p.user_id = pc.participant_id 
+            where pc.checkpoint_id = c.id and p.team_id = t.id 
+            order by timestamp asc limit 1) as visited
 		from checkpoints c
 		join teams t
 			on t.race_id = c.race_id
