@@ -269,6 +269,41 @@ app.post('/api/v1/race/checkpoints', function(req, res){
 	});
 });
 
+app.post('/api/v1/race/checkpoint/visited', function(req, res){		
+	authenticate(req, async function(uid){
+		if(!req.body.checkpoint_id) {
+			JsonResponseCheckpoints(res, [], 101, 'Missing parameter "Checkpoint ID".');
+			return;
+		}
+		var checkpoint_id = req.body.checkpoint_id;
+		let user = await getUserByUID(uid);
+		// TODO: kontrola jestli je race running a muye se do nej zapisovat
+		
+		var [team] = await mysql.query(`
+			select t.* from participants p 
+			join teams t on t.id = p.team_id
+			join race r on r.id = t.race_id
+			join checkpoints c on c.race_id = r.id
+			where c.id = 1 and p.user_id = 7`,
+			[checkpoint_id, user.id]
+		);
+		if(!team){
+			JsonResponseError(res, 'Team or checkpoint does not exist, or you are not signed for this race!');
+		}
+		if(team.status !== 'RUNNING'){
+			JsonResponseError(res, 'You have not started yet!');
+		}
+		try{
+			let result = await setCheckpointVisited(checkpoint_id, user.id);
+			JsonResponse(res, {success: true});
+		} catch (e){
+			JsonResponseError(res, 'Checkpoint has been already visited!');
+		}
+	}, function(err, code){
+		authFailedResponse(res, err, code);
+	});
+});
+
 app.post('/api/v1/race/logout', function(req, res){		
 	authenticate(req, async function(uid){
 		JsonResponse(res, {success: true});
@@ -334,6 +369,14 @@ async function getTeamByCode(code){
 
 async function updateTeamStatus(status, id){
 	let res = await mysql.query('UPDATE teams SET status = ? WHERE id = ?', [status, id]);
+	return res ? res.affectedRows : null;
+}
+
+async function setCheckpointVisited(checkpoint_id, user_id){
+	let res = await mysql.query(`
+		INSERT INTO participant_checkpoints 
+		(checkpoint_id, participant_id, timestamp)
+		VALUES (?, ?, ?)`, [checkpoint_id, user_id, moment()]);
 	return res ? res.affectedRows : null;
 }
 
