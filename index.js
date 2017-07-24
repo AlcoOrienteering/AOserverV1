@@ -146,8 +146,8 @@ app.post('/api/v1/logout', function(req, res){
 		} else {
 			JsonResponseError(res, 'User not found');
 		}			
-	}, function(err){
-		authFailedResponse(res, err);
+	}, function(err, code){
+		authFailedResponse(res, err, code);
 	});
 });
 
@@ -202,8 +202,8 @@ app.post('/api/v1/register/fcm', async function(req, res){
 			JsonResponse(res, {success: false});
 		}
 		
-	}, function(err){
-		authFailedResponse(res, err);
+	}, function(err, code){
+		authFailedResponse(res, err, code);
 	});
 });
 
