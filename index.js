@@ -284,7 +284,7 @@ app.post('/api/v1/race/checkpoint/visited', function(req, res){
 			join teams t on t.id = p.team_id
 			join race r on r.id = t.race_id
 			join checkpoints c on c.race_id = r.id
-			where c.id = 1 and p.user_id = 7`,
+			where c.id = ? and p.user_id = ?`,
 			[checkpoint_id, user.id]
 		);
 		if(!team){
