@@ -155,7 +155,7 @@
 			//var locRef = firebase.database().ref("position"); 			
 			//var locRef = firebase.database().ref("_checkpoints/race_key"); 			
 			//var locRef = firebase.database().ref("_locations/race_key/AHZqDkhKRWPxwhU92AD7WRikf6z2"); 			
-			var locRef = firebase.database().ref("_locations/1/AHZqDkhKRWPxwhU92AD7WRikf6z2"); 			
+			var locRef = firebase.database().ref("_locations/1/AHZqDkhKRWPxwhU92AD7WRikf6z2").orderByKey().limitToLast(20); 			
 			locRef.on('value', function(data) {
 				//console.log('data', data.val());
 				var flightPlanCoordinates = [];	
