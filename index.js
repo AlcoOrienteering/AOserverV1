@@ -410,7 +410,8 @@ async function getRaceByTeamCode(code) {
 			t.name team_name,
 			t.status team_status,
 			t.category team_category,
-			t.start_timestamp team_start_timestamp
+			t.start_timestamp team_start_timestamp,
+			t.finish_timestamp team_finish_timestamp 
 		from race r
 		join teams t
 			on t.race_id = r.id
