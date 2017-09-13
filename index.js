@@ -417,7 +417,7 @@ async function getRaceByTeamCode(code, uid) {
 			t.status team_status,
 			t.category team_category,
 			t.start_timestamp team_start_timestamp,
-			COALESCE(t.finish_timestamp, '') team_finish_timestamp,
+			COALESCE(t.finish_timestamp, 0) team_finish_timestamp,
 			u.email partner_email,
 			u.name partner_name
 		from race r
