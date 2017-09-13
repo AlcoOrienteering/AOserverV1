@@ -236,7 +236,7 @@ app.post('/api/v1/race', function(req, res){
 			JsonResponseError(res, 'Missing parameter "Code".');
 			return;
 		}
-		let race = await getRaceByTeamCode(req.body.code);
+		let race = await getRaceByTeamCode(req.body.code, uid);		
 		JsonResponse(res, {race: race});
 	}, function(err, code){
 		authFailedResponse(res, err, code);
@@ -389,19 +389,25 @@ async function getRacesByUserId(id) {
 			t.name team_name,
 			t.status team_status,
 			t.category team_category,
-			t.start_timestamp team_start_timestamp
+			t.start_timestamp team_start_timestamp,
+			u.email partner_email,
+			u.name partner_name
 		from race r
 		join teams t
 			on t.race_id = r.id
 		join participants p
 			on p.team_id = t.id
+		join participants p2
+			on p2.team_id = t.id
+		join users u 
+			on u.id = p2.user_id and u.id != p.user_id
 		where p.user_id = ?`,
 		[id]
 	);
 	return res;
 }
 
-async function getRaceByTeamCode(code) {
+async function getRaceByTeamCode(code, uid) {
 	let [race] = await mysql.query(
 		`select
 			r.*,
@@ -411,12 +417,20 @@ async function getRaceByTeamCode(code) {
 			t.status team_status,
 			t.category team_category,
 			t.start_timestamp team_start_timestamp,
-			t.finish_timestamp team_finish_timestamp 
+			t.finish_timestamp team_finish_timestamp,
+			u.email partner_email,
+			u.name partner_name
 		from race r
 		join teams t
 			on t.race_id = r.id
-		where t.code = ?`,
-		[code]
+		join participants p
+			on p.team_id = t.id
+		join users u 
+			on u.id = p.user_id
+		where t.code = ?
+			and u.uid != ?
+		`,
+		[code, uid]
 	);
 	if (!race) return null;
 	let [check] = await mysql.query(
