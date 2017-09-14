@@ -259,7 +259,7 @@ app.post('/api/v1/race/checkpoints', function(req, res){
 			JsonResponseCheckpoints(res, [], 103, 'Checkpoints are not yet available for this team.');
 			return;
 		}
-		if(team.status !== 'RUNNING'){
+		if(team.status == 'ACCEPTED'){
 			await updateTeamStatus('RUNNING', team.id);
 		}		
 		var checkpoints = await getRaceCheckpointsByTeamCode(code);
