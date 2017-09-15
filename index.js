@@ -312,6 +312,18 @@ app.post('/api/v1/race/logout', function(req, res){
 	});
 });
 
+app.post('/api/v1/admin/verify', function (req, res) {
+    authenticate(req, async function (uid) {
+        let user = await getUserByUID(uid);
+        if (user && user.role === 'ADMIN') {
+            JsonResponse(res, { success: true });
+        }
+        JsonResponseError(res, 'You do not have sufficient permissions to access this API.', 401);        
+    }, function (err, code) {
+        authFailedResponse(res, err, code);
+    });
+});
+
 /*
 app.post('/api/v1/test', async function(req, res){
 	
