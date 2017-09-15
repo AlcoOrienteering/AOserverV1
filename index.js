@@ -317,7 +317,7 @@ app.post('/api/v1/admin/verify', function (req, res) {
         if (await verifyAdmin(uid)) {
             JsonResponse(res, { success: true });
         }
-        JsonResponseError(res, 'You do not have sufficient permissions to access this API.', 401);        
+        JsonResponseError(res, 'You do not have sufficient permissions to access this API.', 403);        
     }, function (err, code) {
         authFailedResponse(res, err, code);
     });
