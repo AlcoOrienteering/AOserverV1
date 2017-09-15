@@ -314,8 +314,7 @@ app.post('/api/v1/race/logout', function(req, res){
 
 app.post('/api/v1/admin/verify', function (req, res) {
     authenticate(req, async function (uid) {
-        let user = await getUserByUID(uid);
-        if (user && user.role === 'ADMIN') {
+        if (await verifyAdmin(uid)) {
             JsonResponse(res, { success: true });
         }
         JsonResponseError(res, 'You do not have sufficient permissions to access this API.', 401);        
@@ -367,6 +366,14 @@ async function getUserByUID(uid){
 async function getUserById(id){
 	let [res]  = await mysql.query('SELECT * FROM users WHERE id = ?', [id]);
 	return res;
+}
+
+async function verifyAdmin(uid) {
+    let user = await getUserByUID(uid);
+    if (user && user.role === 'ADMIN') {
+        return true;
+    }
+    return false;
 }
 
 async function getRaces(){
