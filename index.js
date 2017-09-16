@@ -323,6 +323,47 @@ app.post('/api/v1/admin/verify', function (req, res) {
     });
 });
 
+app.post('/api/v1/admin/team', function (req, res) {
+    authenticate(req, async function (uid) {
+        if (await verifyAdmin(uid)) {
+			if(!req.body.code) {
+				JsonResponseError(res, 'Missing parameter "Code".');
+				return;
+			}
+			var code = req.body.code;
+			var team = await getTeamByCode(code);
+			if(!team){
+				JsonResponseError(res, 'Team not found.');
+				return;
+			}	
+			// TODO: realne hodnoty z DB
+            JsonResponse(res, {
+			  "team_info": {
+				"name": "Borci",
+				"status": "REGISTERED",
+				"category": "MEN",
+				"start_timestmap": "2017-09-09 20:00:00",
+				"team_members": [
+				  {
+					"email": "m@l.cz",
+					"birth_date": "1997-05-29 00:00:00", // at to ma zase stejny format
+					"full_name": "Martin Lank"
+				  },
+				  {
+					"email": "v@l.cz",
+					"birth_date": "1992-02-25 00:00:00",
+					"full_name": "Vojta Lank"
+				  }
+				]
+			  }
+			});
+        }
+        JsonResponseError(res, 'You do not have sufficient permissions to access this API.', 403);        
+    }, function (err, code) {
+        authFailedResponse(res, err, code);
+    });
+});
+
 /*
 app.post('/api/v1/test', async function(req, res){
 	
