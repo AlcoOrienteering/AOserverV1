@@ -316,8 +316,9 @@ app.post('/api/v1/admin/verify', function (req, res) {
     authenticate(req, async function (uid) {
         if (await verifyAdmin(uid)) {
             JsonResponse(res, { success: true });
-        }
-        JsonResponseError(res, 'You do not have sufficient permissions to access this API.', 403);        
+        } else {
+			JsonResponseError(res, 'You do not have sufficient permissions to access this API.', 403);        
+		}
     }, function (err, code) {
         authFailedResponse(res, err, code);
     });
@@ -357,8 +358,9 @@ app.post('/api/v1/admin/team', function (req, res) {
 				]
 			  }
 			});
-        }
-        JsonResponseError(res, 'You do not have sufficient permissions to access this API.', 403);        
+        } else {
+			JsonResponseError(res, 'You do not have sufficient permissions to access this API.', 403);        
+		}
     }, function (err, code) {
         authFailedResponse(res, err, code);
     });
