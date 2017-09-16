@@ -105,7 +105,7 @@ function JsonResponse(res, data){
 
 function JsonResponseError(res, msg, code = 400){
 	let r = {
-		error: {
+		error_body: {
 			message: msg
 		}
 	};
