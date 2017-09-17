@@ -343,7 +343,7 @@ app.post('/api/v1/admin/team', function (req, res) {
 				"name": "Borci",
 				"status": "REGISTERED",
 				"category": "MEN",
-				"start_timestmap": "2017-09-09 20:00:00",
+				"start_timestamp": "2017-09-09 20:00:00",
 				"team_members": [
 				  {
 					"email": "m@l.cz",
