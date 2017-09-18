@@ -378,6 +378,19 @@ app.put('/api/v1/admin/team', function (req, res) {
     });
 });
 
+app.get('/api/v1/test/_locations', function (req, res) {
+    authenticate(req, async function (uid) {
+        var locRef = firebase.database().ref("_locations/1/" + uid).orderByKey(); 			
+		locRef.once('value', function(data) {
+            JsonResponse(res, { locations: data });
+			return;
+		}        
+    }, function (err, code) {
+        authFailedResponse(res, err, code);
+    });
+});
+
+
 /*
 app.post('/api/v1/test', async function(req, res){
 	
