@@ -384,7 +384,7 @@ app.get('/api/v1/test/_locations', function (req, res) {
 		locRef.once('value', function(data) {
             JsonResponse(res, { locations: data });
 			return;
-		}        
+		});       
     }, function (err, code) {
         authFailedResponse(res, err, code);
     });
