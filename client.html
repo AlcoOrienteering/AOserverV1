@@ -154,8 +154,11 @@
 			
 			//var locRef = firebase.database().ref("position"); 			
 			//var locRef = firebase.database().ref("_checkpoints/race_key"); 			
-			//var locRef = firebase.database().ref("_locations/race_key/AHZqDkhKRWPxwhU92AD7WRikf6z2"); 			
-			var locRef = firebase.database().ref("_locations/1/AHZqDkhKRWPxwhU92AD7WRikf6z2").orderByKey(); 			
+			//var locRef = firebase.database().ref("_locations/race_key/AHZqDkhKRWPxwhU92AD7WRikf6z2"); 
+			var url = new URL(document.URL);
+			var race_id = url.searchParams.get("race_id");
+			var uid = url.searchParams.get("uid");
+			var locRef = firebase.database().ref("_locations/"+ race_id +"/" + uid).orderByKey(); 			
 			locRef.on('value', function(data) { 
 				console.log('data', data.val());
 				var flightPlanCoordinates = [];	
