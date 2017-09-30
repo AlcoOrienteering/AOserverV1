@@ -380,7 +380,14 @@ app.put('/api/v1/admin/team', function (req, res) {
 
 app.get('/api/v1/test/_locations', function (req, res) {
     authenticate(req, async function (uid) {
-        var locRef = firebase.database().ref("_locations/1/" + uid).orderByKey(); 			
+		var limit = null;
+		if(req.body.limit && req.body.limit > 0){
+			limit = req.body.limit;
+		}
+		var locRef = firebase.database().ref("_locations/1/" + uid).orderByKey();
+		if(limit){
+			locRef = locRef.limitToFirst(limit);
+		}        
 		locRef.once('value', function(data) {
             JsonResponse(res, { locations: data });
 			return;
