@@ -378,7 +378,7 @@ app.put('/api/v1/admin/team', function (req, res) {
     });
 });
 
-app.get('/api/v1/test/_locations', function (req, res) {
+app.post('/api/v1/test/_locations', function (req, res) {
     authenticate(req, async function (uid) {
 		var limit = null;
 		if(req.body.limit && req.body.limit > 0){
