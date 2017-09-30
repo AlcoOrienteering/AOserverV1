@@ -187,6 +187,21 @@
 				console.log(flightPath.inKm());
 			});
 		}
+
+		async function test(max = 1000, offset = 100){
+			console.log('x');
+			var url = new URL(document.URL);
+			var race_id = url.searchParams.get("race_id");
+			var uid = url.searchParams.get("uid");
+			var accuracy = url.searchParams.get("accuracy");
+			for(var i = offset; i <= max; i+=offset){
+				let t0 = performance.now();				
+				let locRef = firebase.database().ref("_locations/"+ race_id +"/" + uid).orderByKey().limitToFirst(i);
+				let val = await locRef.once('value');
+				let t1 = performance.now();
+				console.log('TEST fb - ' + i + ' (' + Object.keys(val.val()).length + ') = ' + (t1-t0));	
+			}
+		}
 		
 		/*
 		if(!firebase.auth().currentUser){
