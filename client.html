@@ -200,6 +200,11 @@
 				let t1 = performance.now();
 				console.log('TEST fb - ' + i + ' (' + Object.keys(val.val()).length + ') = ' + (t1-t0));	
 			}
+			let t0 = performance.now();				
+			let locRef = firebase.database().ref("_locations/"+ race_id +"/" + uid).orderByKey();
+			let val = await locRef.once('value');
+			let t1 = performance.now();
+			console.log('TEST fb - NO LIMIT (' + Object.keys(val.val()).length + ') = ' + (t1-t0));				
 		}
 		
 		/*
